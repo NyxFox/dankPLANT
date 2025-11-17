@@ -64,4 +64,4 @@ fi
 
 echo "Cleanup complete!"
 echo "Note: Packages (caddy, ustreamer, python3) were NOT removed."
-echo "To remove packages: apt-get remove caddy"
+echo "To remove packages: apt-get remove caddy ustreamer"

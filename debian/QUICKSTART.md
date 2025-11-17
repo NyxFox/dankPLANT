@@ -107,7 +107,7 @@ htop
 Edit `/etc/systemd/system/ustreamer.service` and change resolution/framerate/quality:
 
 ```ini
-ExecStart=/usr/local/bin/ustreamer \
+ExecStart=/usr/bin/ustreamer \
     --device=/dev/video0 \
     --host=127.0.0.1 \
     --port=8090 \

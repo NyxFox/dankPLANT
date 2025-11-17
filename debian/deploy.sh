@@ -48,31 +48,9 @@ apt-get install -y \
     python3-pip \
     python3-venv \
     v4l-utils \
+    ustreamer \
     git \
-    curl \
-    build-essential \
-    libjpeg-dev \
-    libevent-dev \
-    libbsd-dev \
-    libgpiod-dev \
-    libjpeg62-turbo-dev
-
-# Install ustreamer from source (official GitHub)
-log_info "Installing ustreamer from source..."
-USTREAMER_BUILD_DIR="/tmp/ustreamer-build"
-if [ ! -f "/usr/local/bin/ustreamer" ]; then
-    rm -rf "$USTREAMER_BUILD_DIR"
-    git clone --depth=1 https://github.com/pikvm/ustreamer "$USTREAMER_BUILD_DIR"
-    cd "$USTREAMER_BUILD_DIR"
-    
-    make
-    make install
-    
-    log_info "ustreamer installed successfully"
-    cd "$PROJECT_ROOT"
-else
-    log_info "ustreamer already installed"
-fi
+    curl
 
 # Create grow user if doesn't exist
 log_info "Creating 'grow' user..."

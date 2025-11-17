@@ -76,10 +76,8 @@ If you prefer manual control over the installation:
 
 ```bash
 sudo apt-get update
-sudo apt-get install -y caddy python3 python3-pip python3-venv v4l-utils git curl
+sudo apt-get install -y caddy python3 python3-pip python3-venv v4l-utils ustreamer git curl
 ```
-
-Note: ustreamer will be built from source by the deployment script.
 
 ### 2. Create System User
 
@@ -251,7 +249,7 @@ v4l2-ctl --device=/dev/video0 --list-formats-ext
 If you need different resolution or framerate, edit `/etc/systemd/system/ustreamer.service`:
 
 ```ini
-ExecStart=/usr/local/bin/ustreamer \
+ExecStart=/usr/bin/ustreamer \
     --device=/dev/video0 \
     --host=127.0.0.1 \
     --port=8090 \
@@ -406,14 +404,9 @@ This will:
 - Clean up logs
 - Optionally remove the `grow` user
 
-Packages (caddy, python3) are NOT removed. To remove them:
+Packages (caddy, ustreamer, python3) are NOT removed. To remove them:
 ```bash
-sudo apt-get remove caddy
-```
-
-To remove ustreamer (built from source):
-```bash
-sudo rm /usr/local/bin/ustreamer
+sudo apt-get remove caddy ustreamer
 ```
 
 ## API Endpoints
