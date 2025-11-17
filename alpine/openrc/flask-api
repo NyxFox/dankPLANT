@@ -1,0 +1,44 @@
+#!/sbin/openrc-run
+# OpenRC service for Grow Station Flask API (gunicorn)
+# BusyBox-compatible init script
+
+name="flask-api"
+description="Grow Station Flask API via gunicorn"
+command_user="${USER:-grow}:$GROUP"
+
+: ${APP_DIR:="/opt/grow/api"}
+: ${PYTHON:="/usr/bin/python3"}
+: ${GUNICORN:="/usr/bin/gunicorn"}
+: ${BIND:="127.0.0.1:5000"}
+: ${WORKERS:=2}
+: ${USER:="grow"}
+: ${GROUP:="grow"}
+: ${LOG_DIR:="/var/log/grow"}
+: ${PIDFILE:="/run/flask-api.pid"}
+
+start_stop_daemon_args="--background --make-pidfile --pidfile ${PIDFILE} --chdir ${APP_DIR} --user ${USER}:${GROUP}"
+
+depend() {
+    need net
+    after firewall
+}
+
+start_pre() {
+    checkpath -d -o ${USER}:${GROUP} -m 0755 ${LOG_DIR}
+    checkpath -d -o ${USER}:${GROUP} -m 0755 /var/www/data
+}
+
+start() {
+    ebegin "Starting Flask API (gunicorn)"
+    start-stop-daemon --start ${start_stop_daemon_args} \
+        --exec ${GUNICORN} -- \
+        -w ${WORKERS} -b ${BIND} --pid ${PIDFILE} --log-file ${LOG_DIR}/flask-api.log \
+        app:app
+    eend $?
+}
+
+stop() {
+    ebegin "Stopping Flask API"
+    start-stop-daemon --stop --pidfile ${PIDFILE} --retry 5
+    eend $?
+}

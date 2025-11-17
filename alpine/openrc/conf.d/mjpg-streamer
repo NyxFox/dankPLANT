@@ -1,0 +1,22 @@
+# /etc/conf.d/mjpg-streamer - defaults for mjpg-streamer service
+# Copy this file to /etc/conf.d/mjpg-streamer and adjust as needed
+
+# User/group to run mjpg-streamer (must access /dev/video0)
+USER="video"
+GROUP="video"
+
+# Listen port (Caddy will reverse proxy at /video/stream)
+PORT="8090"
+
+# Video device
+DEVICE="/dev/video0"
+
+# Resolution and framerate (check camera capabilities)
+RESOLUTION="1280x720"
+FRAMERATE="15"
+
+# Binary and plugin locations (provided by Alpine packages)
+MJPG_BIN="/usr/bin/mjpg_streamer"
+INPUT_PLUGIN="/usr/lib/mjpg-streamer/input_uvc.so"
+OUTPUT_PLUGIN="/usr/lib/mjpg-streamer/output_http.so"
+WWW_DIR="/usr/share/mjpg-streamer/www"

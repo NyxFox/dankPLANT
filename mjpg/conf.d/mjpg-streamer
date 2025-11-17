@@ -1,0 +1,11 @@
+# Sample conf to copy to /etc/conf.d/mjpg-streamer
+USER="video"
+GROUP="video"
+PORT="8090"
+DEVICE="/dev/video0"
+RESOLUTION="1280x720"
+FRAMERATE="15"
+MJPG_BIN="/usr/bin/mjpg_streamer"
+INPUT_PLUGIN="/usr/lib/mjpg-streamer/input_uvc.so"
+OUTPUT_PLUGIN="/usr/lib/mjpg-streamer/output_http.so"
+WWW_DIR="/usr/share/mjpg-streamer/www"

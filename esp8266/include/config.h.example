@@ -1,0 +1,48 @@
+// ESP8266 Configuration Template
+// Copy this file to config.h and fill in your values
+// DO NOT commit config.h with real credentials!
+
+#ifndef CONFIG_H
+#define CONFIG_H
+
+// WiFi Configuration
+#define WIFI_SSID "<SSID>"              // Your WiFi network name
+#define WIFI_PASSWORD "<WIFI_PASSWORD>"  // Your WiFi password
+
+// Server Configuration
+#define SERVER_IP "<SERVER_IP>"          // IP address of your Debian server (e.g., "192.168.1.100")
+#define SERVER_PORT 80
+#define API_ENDPOINT "/api/sensor"       // API endpoint path
+
+// Device Identification
+#define DEVICE_ID "esp8266-grow-controller-01"
+
+// DHT11 Sensor Pin
+#define GPIO_DHT <GPIO_DHT>              // GPIO pin for DHT11 (e.g., D4 = GPIO2)
+
+// OLED Display Pins (I2C)
+#define GPIO_OLED_SDA <GPIO_OLED_SDA>    // GPIO pin for OLED SDA (e.g., D2 = GPIO4)
+#define GPIO_OLED_SCL <GPIO_OLED_SCL>    // GPIO pin for OLED SCL (e.g., D1 = GPIO5)
+
+// Timing Configuration
+#define SENSOR_READ_INTERVAL 10000       // Read sensors every 10 seconds (milliseconds)
+#define RETRY_ATTEMPTS 3                 // Number of retry attempts for HTTP POST
+#define RETRY_DELAY 2000                 // Delay between retries (milliseconds)
+
+// NTP Configuration
+#define NTP_SERVER "pool.ntp.org"
+#define GMT_OFFSET 0                     // GMT offset in seconds
+#define DAYLIGHT_OFFSET 0                // Daylight saving offset in seconds
+
+// Example GPIO mappings for D1 Mini:
+// D0 = GPIO16
+// D1 = GPIO5
+// D2 = GPIO4
+// D3 = GPIO0
+// D4 = GPIO2
+// D5 = GPIO14
+// D6 = GPIO12
+// D7 = GPIO13
+// D8 = GPIO15
+
+#endif // CONFIG_H

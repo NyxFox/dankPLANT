@@ -1,0 +1,35 @@
+[Unit]
+Description=Grow Station Flask API via gunicorn
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=notify
+User=grow
+Group=grow
+WorkingDirectory=/opt/grow/api
+Environment="PATH=/opt/grow/api/.venv/bin:/usr/local/bin:/usr/bin:/bin"
+ExecStart=/opt/grow/api/.venv/bin/gunicorn \
+    --workers 2 \
+    --bind 127.0.0.1:5000 \
+    --log-file /var/log/grow/flask-api.log \
+    --access-logfile /var/log/grow/flask-api-access.log \
+    app:app
+ExecReload=/bin/kill -s HUP $MAINPID
+Restart=on-failure
+RestartSec=5s
+KillMode=mixed
+TimeoutStopSec=5
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/log/grow /var/www/data
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+
+[Install]
+WantedBy=multi-user.target

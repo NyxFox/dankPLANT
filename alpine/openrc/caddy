@@ -1,0 +1,38 @@
+#!/sbin/openrc-run
+# Optional OpenRC service for Caddy using a Caddyfile
+# Note: Alpine's caddy package already provides a service. Use this only if you want a pinned local config.
+
+name="caddy"
+description="Caddy web server"
+
+: ${USER:="caddy"}
+: ${GROUP:="caddy"}
+: ${CADDY_BIN:="/usr/bin/caddy"}
+: ${CADDYFILE:="/etc/caddy/Caddyfile"}
+: ${DATA_DIR:="/var/lib/caddy"}
+: ${CONFIG_DIR:="/etc/caddy"}
+: ${LOG_DIR:="/var/log/caddy"}
+: ${PIDFILE:="/run/caddy.pid"}
+
+start_stop_daemon_args="--background --make-pidfile --pidfile ${PIDFILE} --user ${USER}:${GROUP}"
+
+depend() {
+    need net
+}
+
+start_pre() {
+    checkpath -d -o ${USER}:${GROUP} -m 0755 ${LOG_DIR}
+}
+
+start() {
+    ebegin "Starting Caddy"
+    start-stop-daemon --start ${start_stop_daemon_args} \
+      --exec /bin/sh -- -c "exec ${CADDY_BIN} run --config ${CADDYFILE} 2>> ${LOG_DIR}/caddy.err >> ${LOG_DIR}/caddy.out"
+    eend $?
+}
+
+stop() {
+    ebegin "Stopping Caddy"
+    start-stop-daemon --stop --pidfile ${PIDFILE} --retry 5
+    eend $?
+}

@@ -1,0 +1,9 @@
+# /etc/conf.d/caddy - defaults for Caddy service
+USER="caddy"
+GROUP="caddy"
+CADDY_BIN="/usr/bin/caddy"
+CADDYFILE="/etc/caddy/Caddyfile"
+DATA_DIR="/var/lib/caddy"
+CONFIG_DIR="/etc/caddy"
+LOG_DIR="/var/log/caddy"
+PIDFILE="/run/caddy.pid"
