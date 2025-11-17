@@ -6,7 +6,7 @@ This project sets up a complete grow station monitoring system on Debian 13 (hea
 
 - **Caddy** web server (serves dashboard, reverse proxy)
 - **Python Flask API** for storing/reading sensor data
-- **mjpg-streamer** for USB webcam live streaming
+- **ustreamer** for USB webcam live streaming (lightweight, hardware-accelerated)
 - **Simple HTML/JS Dashboard** (temperature, humidity, video stream)
 - **ESP8266 Firmware** (PlatformIO) with DHT11 and SSD1306 OLED
 
@@ -18,12 +18,12 @@ This project sets up a complete grow station monitoring system on Debian 13 (hea
 graph LR
   subgraph WiFi LAN
     ESP[ESP8266 D1 mini\nDHT11 + SSD1306\nPOST -> /api/sensor]
-    Host[Debian 13 Host\nCaddy + Flask + mjpg-streamer]
+    Host[Debian 13 Host\nCaddy + Flask + ustreamer]
   end
 
   ESP -- HTTP POST JSON --> Host
   User[(Browser)] -- HTTP :80 --> Host
-  Host -- /video/stream --> mjpg[mjpg-streamer 127.0.0.1:8090]
+  Host -- /video/stream --> ustreamer[ustreamer 127.0.0.1:8090]
   Host -- /api/* --> flask[Flask 127.0.0.1:5000]
 ```
 
@@ -55,7 +55,7 @@ sudo bash debian/deploy.sh
 ```
 
 The script will:
-- Install all required packages (caddy, python3, mjpg-streamer, etc.)
+- Install all required packages (caddy, python3, ustreamer, etc.)
 - Create system users and directories
 - Deploy Flask API with Python virtual environment
 - Install systemd services
@@ -76,8 +76,10 @@ If you prefer manual control over the installation:
 
 ```bash
 sudo apt-get update
-sudo apt-get install -y caddy python3 python3-pip python3-venv mjpg-streamer v4l-utils git curl
+sudo apt-get install -y caddy python3 python3-pip python3-venv v4l-utils git curl
 ```
+
+Note: ustreamer will be built from source by the deployment script.
 
 ### 2. Create System User
 
@@ -91,7 +93,7 @@ sudo useradd --system --no-create-home --shell /usr/sbin/nologin --comment "Grow
 sudo install -d -m 0755 -o root -g root /var/www/html
 sudo install -d -m 0755 -o grow -g grow /opt/grow/api
 sudo install -d -m 0755 -o grow -g grow /var/log/grow
-sudo install -d -m 0755 -o video -g video /var/log/mjpg-streamer
+sudo install -d -m 0755 -o grow -g grow /var/log/ustreamer
 sudo install -d -m 0755 -o grow -g grow /var/www/data
 sudo install -d -m 0755 -o root -g root /etc/caddy
 ```
@@ -115,16 +117,16 @@ sudo -u grow .venv/bin/pip install -r requirements.txt
 ```bash
 # Copy service files
 sudo cp debian/systemd/flask-api.service /etc/systemd/system/
-sudo cp debian/systemd/mjpg-streamer.service /etc/systemd/system/
+sudo cp debian/systemd/ustreamer.service /etc/systemd/system/
 
 # Reload systemd
 sudo systemctl daemon-reload
 
 # Enable and start services
 sudo systemctl enable flask-api.service
-sudo systemctl enable mjpg-streamer.service
+sudo systemctl enable ustreamer.service
 sudo systemctl start flask-api.service
-sudo systemctl start mjpg-streamer.service
+sudo systemctl start ustreamer.service
 ```
 
 ### 6. Configure Caddy
@@ -151,7 +153,7 @@ bash debian/status.sh
 
 # Or check individual services
 sudo systemctl status flask-api
-sudo systemctl status mjpg-streamer
+sudo systemctl status ustreamer
 sudo systemctl status caddy
 ```
 
@@ -160,7 +162,7 @@ sudo systemctl status caddy
 ```bash
 # Follow logs in real-time
 sudo journalctl -u flask-api -f
-sudo journalctl -u mjpg-streamer -f
+sudo journalctl -u ustreamer -f
 sudo journalctl -u caddy -f
 
 # View recent logs
@@ -171,7 +173,7 @@ sudo journalctl -u flask-api -n 50
 
 ```bash
 sudo systemctl restart flask-api
-sudo systemctl restart mjpg-streamer
+sudo systemctl restart ustreamer
 sudo systemctl restart caddy
 ```
 
@@ -246,18 +248,25 @@ v4l2-ctl --device=/dev/video0 --list-formats-ext
 
 ### Adjust Camera Settings
 
-If you need different resolution or framerate, edit `/etc/systemd/system/mjpg-streamer.service`:
+If you need different resolution or framerate, edit `/etc/systemd/system/ustreamer.service`:
 
 ```ini
-ExecStart=/usr/bin/mjpg_streamer \
-    -i "/usr/lib/x86_64-linux-gnu/mjpg-streamer/input_uvc.so -d /dev/video0 -r 1920x1080 -f 30" \
-    -o "/usr/lib/x86_64-linux-gnu/mjpg-streamer/output_http.so -w /usr/share/mjpg-streamer/www -p 8090 -l 127.0.0.1"
+ExecStart=/usr/local/bin/ustreamer \
+    --device=/dev/video0 \
+    --host=127.0.0.1 \
+    --port=8090 \
+    --resolution=1920x1080 \
+    --format=MJPEG \
+    --desired-fps=30 \
+    --encoder=HW \
+    --quality=80 \
+    --last-as-blank=5
 ```
 
 Then reload:
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl restart mjpg-streamer
+sudo systemctl restart ustreamer
 ```
 
 ## Troubleshooting
@@ -278,18 +287,16 @@ sudo chown grow:grow /var/www/data
 sudo chmod 755 /var/www/data
 ```
 
-### MJPG Streamer Not Starting
+### uStreamer Not Starting
 
-**Problem**: `mjpg-streamer.service` fails to start
+**Problem**: `ustreamer.service` fails to start
 
 **Solutions**:
 1. Check if camera is connected: `ls -l /dev/video0`
-2. Check user permissions: `sudo usermod -a -G video $USER`
-3. Verify plugin paths exist:
-   ```bash
-   ls /usr/lib/x86_64-linux-gnu/mjpg-streamer/
-   ```
-4. Check logs: `sudo journalctl -u mjpg-streamer -n 50`
+2. Check user permissions: `sudo usermod -a -G video grow`
+3. Verify ustreamer is installed: `which ustreamer`
+4. Check logs: `sudo journalctl -u ustreamer -n 50`
+5. Test manually: `ustreamer --device=/dev/video0 --host=127.0.0.1 --port=8090`
 
 ### Caddy Not Binding to Port 80
 
@@ -379,10 +386,11 @@ ExecStart=/opt/grow/api/.venv/bin/gunicorn \
 
 ### Camera Performance
 
-For lower bandwidth/CPU usage:
-- Reduce resolution: `-r 640x480`
-- Reduce framerate: `-f 10`
-- Adjust quality: Add `-q 50` (lower = more compression)
+For lower bandwidth/CPU usage, adjust settings in `/etc/systemd/system/ustreamer.service`:
+- Reduce resolution: `--resolution=640x480`
+- Reduce framerate: `--desired-fps=10`
+- Adjust quality: `--quality=50` (lower = more compression)
+- Use software encoder if hardware fails: `--encoder=SW`
 
 ## Uninstallation
 
@@ -398,9 +406,14 @@ This will:
 - Clean up logs
 - Optionally remove the `grow` user
 
-Packages (caddy, mjpg-streamer, python3) are NOT removed. To remove them:
+Packages (caddy, python3) are NOT removed. To remove them:
 ```bash
-sudo apt-get remove caddy mjpg-streamer
+sudo apt-get remove caddy
+```
+
+To remove ustreamer (built from source):
+```bash
+sudo rm /usr/local/bin/ustreamer
 ```
 
 ## API Endpoints

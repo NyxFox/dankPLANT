@@ -21,10 +21,10 @@
 		reverse_proxy 127.0.0.1:5000
 	}
 
-	# Reverse proxy for mjpg-streamer under /video/stream
+	# Reverse proxy for ustreamer under /video/stream
 	@stream path /video/stream/*
 	handle @stream {
-		# Strip the /video/stream prefix so upstream can receive '/?action=stream'
+		# Strip the /video/stream prefix so upstream can receive '/?action=stream' or '/stream'
 		uri strip_prefix /video/stream
 		reverse_proxy 127.0.0.1:8090
 	}

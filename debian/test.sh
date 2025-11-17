@@ -33,8 +33,8 @@ else
     echo -e "${FAIL} Not running"
 fi
 
-echo -n "  MJPG Streamer service... "
-if systemctl is-active --quiet mjpg-streamer; then
+echo -n "  uStreamer service... "
+if systemctl is-active --quiet ustreamer; then
     echo -e "${PASS} Running"
 else
     echo -e "${WARN} Not running (camera may not be connected)"
@@ -67,7 +67,7 @@ else
     echo -e "${FAIL} Not listening"
 fi
 
-echo -n "  Port 8090 (MJPG Streamer)... "
+echo -n "  Port 8090 (uStreamer)... "
 if netstat -tuln | grep -q ":8090 "; then
     echo -e "${PASS} Listening"
 else
@@ -120,7 +120,7 @@ HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://$HOSTNAME/video/stream
 if [ "$HTTP_CODE" = "200" ]; then
     echo -e "${PASS} HTTP $HTTP_CODE"
 elif [ "$HTTP_CODE" = "502" ] || [ "$HTTP_CODE" = "503" ]; then
-    echo -e "${WARN} HTTP $HTTP_CODE (MJPG Streamer not running)"
+    echo -e "${WARN} HTTP $HTTP_CODE (uStreamer not running)"
 else
     echo -e "${FAIL} HTTP $HTTP_CODE"
 fi
@@ -209,6 +209,6 @@ echo "  Video Stream:   http://${HOSTNAME}/video/stream/?action=stream"
 echo ""
 echo "Check logs with:"
 echo "  sudo journalctl -u flask-api -f"
-echo "  sudo journalctl -u mjpg-streamer -f"
+echo "  sudo journalctl -u ustreamer -f"
 echo "  sudo journalctl -u caddy -f"
 echo ""

@@ -11,7 +11,7 @@ sudo bash debian/deploy.sh
 | Command | Description |
 |---------|-------------|
 | `sudo systemctl status flask-api` | Check Flask API status |
-| `sudo systemctl status mjpg-streamer` | Check camera streamer status |
+| `sudo systemctl status ustreamer` | Check camera streamer status |
 | `sudo systemctl status caddy` | Check web server status |
 | `sudo systemctl restart <service>` | Restart a service |
 | `sudo systemctl stop <service>` | Stop a service |
@@ -23,7 +23,7 @@ sudo bash debian/deploy.sh
 | Command | Description |
 |---------|-------------|
 | `sudo journalctl -u flask-api -f` | Follow Flask API logs |
-| `sudo journalctl -u mjpg-streamer -f` | Follow camera logs |
+| `sudo journalctl -u ustreamer -f` | Follow camera logs |
 | `sudo journalctl -u caddy -f` | Follow Caddy logs |
 | `sudo journalctl -u flask-api -n 50` | View last 50 Flask API log lines |
 
@@ -44,9 +44,9 @@ sudo bash debian/deploy.sh
 | `/var/www/html/` | Dashboard files |
 | `/var/www/data/sensor.json` | Stored sensor data |
 | `/var/log/grow/` | Flask API logs |
-| `/var/log/mjpg-streamer/` | Camera streamer logs |
+| `/var/log/ustreamer/` | Camera streamer logs |
 | `/etc/systemd/system/flask-api.service` | Flask API service config |
-| `/etc/systemd/system/mjpg-streamer.service` | Camera service config |
+| `/etc/systemd/system/ustreamer.service` | Camera service config |
 | `/etc/caddy/Caddyfile` | Web server config |
 
 ## Troubleshooting
@@ -104,16 +104,25 @@ htop
 
 ## Camera Configuration
 
-Edit `/etc/systemd/system/mjpg-streamer.service` and change resolution/framerate:
+Edit `/etc/systemd/system/ustreamer.service` and change resolution/framerate/quality:
 
 ```ini
--r 1920x1080 -f 30
+ExecStart=/usr/local/bin/ustreamer \
+    --device=/dev/video0 \
+    --host=127.0.0.1 \
+    --port=8090 \
+    --resolution=1920x1080 \
+    --format=MJPEG \
+    --desired-fps=30 \
+    --encoder=HW \
+    --quality=80 \
+    --last-as-blank=5
 ```
 
 Then reload:
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl restart mjpg-streamer
+sudo systemctl restart ustreamer
 ```
 
 ## Uninstall

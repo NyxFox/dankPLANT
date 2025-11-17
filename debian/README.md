@@ -8,7 +8,7 @@
 
 ### Systemd Services
 - **debian/systemd/flask-api.service** - Flask API service unit
-- **debian/systemd/mjpg-streamer.service** - Camera streamer service unit
+- **debian/systemd/ustreamer.service** - Camera streamer service unit
 
 ### Management Scripts
 - **debian/check.sh** - Pre-installation system check
@@ -18,7 +18,7 @@
 - **debian/uninstall.sh** - Complete removal script
 
 ### Configuration
-- **debian/mjpg-streamer.conf** - Camera settings template
+Note: ustreamer settings are configured directly in the systemd service file.
 
 ### Documentation
 **README.md** - Main documentation
@@ -41,11 +41,10 @@ dankplant/
 │   ├── backup.sh              # Backup/restore
 │   ├── uninstall.sh           # Cleanup script
 │   ├── Caddyfile              # Web server config
-│   ├── mjpg-streamer.conf     # Camera config
 │   ├── QUICKSTART.md          # Quick reference
 │   └── systemd/
 │       ├── flask-api.service
-│       └── mjpg-streamer.service
+│       └── ustreamer.service
 │
 
 │
@@ -100,7 +99,7 @@ sudo bash debian/backup.sh   # Backup data
 Port 80 → Caddy
           ├─ / → /var/www/html (dashboard)
           ├─ /api/* → 127.0.0.1:5000 (Flask API)
-          └─ /video/stream/* → 127.0.0.1:8090 (mjpg-streamer)
+          └─ /video/stream/* → 127.0.0.1:8090 (ustreamer)
 
 User: grow
   ├─ /opt/grow/api (Flask app + venv)

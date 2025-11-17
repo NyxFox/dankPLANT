@@ -9,8 +9,8 @@ echo "--- Flask API ---"
 systemctl status flask-api.service --no-pager -l | head -10
 echo ""
 
-echo "--- MJPG Streamer ---"
-systemctl status mjpg-streamer.service --no-pager -l | head -10
+echo "--- uStreamer ---"
+systemctl status ustreamer.service --no-pager -l | head -10
 echo ""
 
 echo "--- Caddy Web Server ---"
@@ -23,8 +23,8 @@ echo "--- Flask API (last 5 lines) ---"
 journalctl -u flask-api.service -n 5 --no-pager
 echo ""
 
-echo "--- MJPG Streamer (last 5 lines) ---"
-journalctl -u mjpg-streamer.service -n 5 --no-pager
+echo "--- uStreamer (last 5 lines) ---"
+journalctl -u ustreamer.service -n 5 --no-pager
 echo ""
 
 echo "--- Caddy (last 5 lines) ---"

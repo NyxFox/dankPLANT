@@ -52,57 +52,26 @@ apt-get install -y \
     curl \
     build-essential \
     libjpeg-dev \
-    imagemagick \
-    subversion \
-    libv4l-dev \
-    cmake
+    libevent-dev \
+    libbsd-dev \
+    libgpiod-dev \
+    libjpeg62-turbo-dev
 
-# Install mjpg-streamer from source (official SourceForge SVN)
-log_info "Installing mjpg-streamer from source..."
-MJPG_BUILD_DIR="/tmp/mjpg-streamer-build"
-if [ ! -f "/usr/local/bin/mjpg_streamer" ]; then
-    rm -rf "$MJPG_BUILD_DIR"
-    svn co svn://svn.code.sf.net/p/mjpg-streamer/code/ "$MJPG_BUILD_DIR"
-    cd "$MJPG_BUILD_DIR/mjpg-streamer"
-
-    # Ensure a clean build and enforce flags across all sub-makes
-    make clean || true
-    # Append -fcommon to CFLAGS in all relevant Makefiles to resolve multiple-definition
-    # without overriding upstream flags like -shared/-fPIC
-    log_info "Patching Makefiles to append -fcommon to CFLAGS..."
-    find "$MJPG_BUILD_DIR/mjpg-streamer" -type f -name Makefile -print \
-        -exec sed -i -E 's/^(CFLAGS[[:space:]]*=[[:space:]]*.*)$/\1 -fcommon/' {} \; \
-        -exec sed -i -E 's/^(CFLAGS[[:space:]]*\+=.*)$/\1 -fcommon/' {} \;
-    log_info "Building mjpg-streamer (preserving upstream flags + -fcommon)"
+# Install ustreamer from source (official GitHub)
+log_info "Installing ustreamer from source..."
+USTREAMER_BUILD_DIR="/tmp/ustreamer-build"
+if [ ! -f "/usr/local/bin/ustreamer" ]; then
+    rm -rf "$USTREAMER_BUILD_DIR"
+    git clone --depth=1 https://github.com/pikvm/ustreamer "$USTREAMER_BUILD_DIR"
+    cd "$USTREAMER_BUILD_DIR"
+    
     make
     make install
-
-    # Normalize plugin and www install paths for systemd service
-    if [ -f "/usr/local/lib/mjpg-streamer/input_uvc.so" ] && [ ! -f "/usr/local/lib/input_uvc.so" ]; then
-        ln -sf "/usr/local/lib/mjpg-streamer/input_uvc.so" "/usr/local/lib/input_uvc.so"
-    fi
-    if [ -f "/usr/local/lib/mjpg-streamer/output_http.so" ] && [ ! -f "/usr/local/lib/output_http.so" ]; then
-        ln -sf "/usr/local/lib/mjpg-streamer/output_http.so" "/usr/local/lib/output_http.so"
-    fi
-
-    # Ensure www assets available where service expects them
-    if [ ! -d "/usr/local/share/mjpg-streamer/www" ]; then
-        if [ -d "/usr/local/www" ]; then
-            install -d -m 0755 "/usr/local/share/mjpg-streamer"
-            ln -s "/usr/local/www" "/usr/local/share/mjpg-streamer/www"
-        elif [ -d "$MJPG_BUILD_DIR/mjpg-streamer/www" ]; then
-            install -d -m 0755 "/usr/local/share/mjpg-streamer"
-            cp -r "$MJPG_BUILD_DIR/mjpg-streamer/www" "/usr/local/share/mjpg-streamer/"
-        elif [ -d "$MJPG_BUILD_DIR/mjpg-streamer-experimental/www" ]; then
-            install -d -m 0755 "/usr/local/share/mjpg-streamer"
-            cp -r "$MJPG_BUILD_DIR/mjpg-streamer-experimental/www" "/usr/local/share/mjpg-streamer/"
-        fi
-    fi
-
-    log_info "mjpg-streamer installed successfully"
+    
+    log_info "ustreamer installed successfully"
     cd "$PROJECT_ROOT"
 else
-    log_info "mjpg-streamer already installed"
+    log_info "ustreamer already installed"
 fi
 
 # Create grow user if doesn't exist
@@ -126,7 +95,7 @@ log_info "Creating directory structure..."
 install -d -m 0755 -o root -g root /var/www/html
 install -d -m 0755 -o grow -g grow /opt/grow/api
 install -d -m 0755 -o grow -g grow /var/log/grow
-install -d -m 0755 -o grow -g grow /var/log/mjpg-streamer
+install -d -m 0755 -o grow -g grow /var/log/ustreamer
 install -d -m 0755 -o root -g root /var/www/data
 install -d -m 0755 -o root -g root /etc/caddy
 
@@ -150,7 +119,7 @@ sudo -u grow .venv/bin/pip install --no-cache-dir -r requirements.txt
 # Deploy systemd services
 log_info "Installing systemd service files..."
 cp "$PROJECT_ROOT/debian/systemd/flask-api.service" /etc/systemd/system/
-cp "$PROJECT_ROOT/debian/systemd/mjpg-streamer.service" /etc/systemd/system/
+cp "$PROJECT_ROOT/debian/systemd/ustreamer.service" /etc/systemd/system/
 
 # Deploy Caddyfile
 log_info "Installing Caddyfile..."
@@ -167,7 +136,7 @@ systemctl daemon-reload
 # Enable services
 log_info "Enabling services..."
 systemctl enable flask-api.service
-systemctl enable mjpg-streamer.service
+systemctl enable ustreamer.service
 systemctl enable caddy.service
 
 # Start services
@@ -175,12 +144,12 @@ log_info "Starting services..."
 systemctl restart flask-api.service
 systemctl restart caddy.service
 
-# Start mjpg-streamer (might fail if no camera connected)
-if systemctl restart mjpg-streamer.service 2>/dev/null; then
-    log_info "mjpg-streamer started successfully"
+# Start ustreamer (might fail if no camera connected)
+if systemctl restart ustreamer.service 2>/dev/null; then
+    log_info "ustreamer started successfully"
 else
-    log_warn "mjpg-streamer failed to start (check if USB camera is connected)"
-    log_warn "You can start it later with: systemctl start mjpg-streamer.service"
+    log_warn "ustreamer failed to start (check if USB camera is connected)"
+    log_warn "You can start it later with: systemctl start ustreamer.service"
 fi
 
 # Check service status
@@ -190,7 +159,7 @@ systemctl status flask-api.service --no-pager -l || true
 echo ""
 systemctl status caddy.service --no-pager -l || true
 echo ""
-systemctl status mjpg-streamer.service --no-pager -l || true
+systemctl status ustreamer.service --no-pager -l || true
 
 # Display service URLs
 HOSTNAME=$(hostname -I | awk '{print $1}')
@@ -209,7 +178,7 @@ echo "  Video Stream:   http://${HOSTNAME}/video/stream/?action=stream"
 echo ""
 log_info "Service Management Commands:"
 echo "  systemctl status flask-api"
-echo "  systemctl status mjpg-streamer"
+echo "  systemctl status ustreamer"
 echo "  systemctl status caddy"
 echo "  systemctl restart <service-name>"
 echo "  journalctl -u <service-name> -f"
@@ -217,7 +186,7 @@ echo ""
 log_info "Next steps:"
 echo "  1. Configure your ESP8266 with server IP: $HOSTNAME"
 echo "  2. Check camera with: v4l2-ctl --list-devices"
-echo "  3. Adjust camera settings in /etc/systemd/system/mjpg-streamer.service if needed"
+echo "  3. Adjust camera settings in /etc/systemd/system/ustreamer.service if needed"
 echo "  4. Monitor logs: journalctl -u flask-api -f"
 echo ""
 log_info "All services are now running!"

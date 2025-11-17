@@ -32,16 +32,16 @@ fi
 # Stop and disable services
 echo "Stopping services..."
 systemctl stop flask-api.service 2>/dev/null || true
-systemctl stop mjpg-streamer.service 2>/dev/null || true
+systemctl stop ustreamer.service 2>/dev/null || true
 systemctl stop caddy.service 2>/dev/null || true
 
 systemctl disable flask-api.service 2>/dev/null || true
-systemctl disable mjpg-streamer.service 2>/dev/null || true
+systemctl disable ustreamer.service 2>/dev/null || true
 
 # Remove service files
 echo "Removing service files..."
 rm -f /etc/systemd/system/flask-api.service
-rm -f /etc/systemd/system/mjpg-streamer.service
+rm -f /etc/systemd/system/ustreamer.service
 
 # Reload systemd
 systemctl daemon-reload
@@ -50,7 +50,7 @@ systemctl daemon-reload
 echo "Removing application files..."
 rm -rf /opt/grow
 rm -rf /var/log/grow
-rm -rf /var/log/mjpg-streamer
+rm -rf /var/log/ustreamer
 rm -rf /var/www/html/*
 rm -rf /var/www/data/*
 rm -f /etc/caddy/Caddyfile
@@ -63,5 +63,5 @@ if [ "$remove_user" == "yes" ]; then
 fi
 
 echo "Cleanup complete!"
-echo "Note: Packages (caddy, mjpg-streamer, python3) were NOT removed."
-echo "To remove packages: apt-get remove caddy mjpg-streamer"
+echo "Note: Packages (caddy, ustreamer, python3) were NOT removed."
+echo "To remove packages: apt-get remove caddy"

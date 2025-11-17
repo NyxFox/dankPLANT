@@ -44,7 +44,7 @@ bash debian/status.sh
 ```
 - [ ] flask-api: active (running)
 - [ ] caddy: active (running)
-- [ ] mjpg-streamer: active (running) or acceptable failure
+- [ ] ustreamer: active (running) or acceptable failure
 
 ## Browser Testing
 
@@ -115,13 +115,14 @@ sudo journalctl -u flask-api -f
 
 ### Adjust Camera Settings (if needed)
 ```bash
-sudo nano /etc/systemd/system/mjpg-streamer.service
+sudo nano /etc/systemd/system/ustreamer.service
 ```
 - [ ] Resolution adjusted
 - [ ] Framerate adjusted
+- [ ] Quality adjusted
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl restart mjpg-streamer
+sudo systemctl restart ustreamer
 ```
 
 ### Create First Backup
