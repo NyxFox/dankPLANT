@@ -101,13 +101,12 @@ Port 80 → Caddy
           ├─ /api/* → 127.0.0.1:5000 (Flask API)
           └─ /video/stream/* → 127.0.0.1:8090 (ustreamer)
 
-User: grow
+User: grow (member of video group for camera access)
   ├─ /opt/grow/api (Flask app + venv)
   ├─ /var/www/data (sensor.json)
-  └─ /var/log/grow (logs)
-
-User: video
-  └─ /dev/video0 (camera access)
+  ├─ /var/log/grow (logs)
+  └─ /var/log/ustreamer (camera logs)
+  └─ /dev/video0 (camera access via video group)
 ```
 
 ## Deployment Workflow

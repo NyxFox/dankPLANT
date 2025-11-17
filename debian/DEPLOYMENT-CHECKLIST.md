@@ -53,7 +53,7 @@ Replace `<IP>` with your server IP:
 - [ ] Dashboard loads: `http://<IP>/`
 - [ ] API responds: `http://<IP>/api/health`
 - [ ] Sensor endpoint ready: `http://<IP>/api/sensor`
-- [ ] Video stream works: `http://<IP>/video/stream/?action=stream`
+- [ ] Video stream works: `http://<IP>/video/stream/stream`
 
 ## ESP8266 Configuration
 

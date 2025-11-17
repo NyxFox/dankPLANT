@@ -64,9 +64,9 @@ backup() {
         echo "  ✓ Flask API service"
     fi
     
-    if [ -f /etc/systemd/system/mjpg-streamer.service ]; then
-        cp /etc/systemd/system/mjpg-streamer.service "$TMP_DIR/config/"
-        echo "  ✓ MJPG Streamer service"
+    if [ -f /etc/systemd/system/ustreamer.service ]; then
+        cp /etc/systemd/system/ustreamer.service "$TMP_DIR/config/"
+        echo "  ✓ uStreamer service"
     fi
     
     # Backup API code (optional)
@@ -135,9 +135,9 @@ restore() {
         echo "  ✓ Flask API service"
     fi
     
-    if [ -f "$TMP_DIR/config/mjpg-streamer.service" ]; then
-        cp "$TMP_DIR/config/mjpg-streamer.service" /etc/systemd/system/
-        echo "  ✓ MJPG Streamer service"
+    if [ -f "$TMP_DIR/config/ustreamer.service" ]; then
+        cp "$TMP_DIR/config/ustreamer.service" /etc/systemd/system/
+        echo "  ✓ uStreamer service"
     fi
     
     if [ -f "$TMP_DIR/api/app.py" ]; then

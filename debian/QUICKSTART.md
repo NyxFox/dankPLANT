@@ -34,7 +34,7 @@ sudo bash debian/deploy.sh
 | `http://<IP>/` | Main dashboard |
 | `http://<IP>/api/health` | API health check |
 | `http://<IP>/api/sensor` | Current sensor data |
-| `http://<IP>/video/stream/?action=stream` | Live camera stream |
+| `http://<IP>/video/stream/stream` | Live camera stream |
 
 ## File Locations
 

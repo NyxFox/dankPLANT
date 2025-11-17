@@ -91,7 +91,7 @@ if [ -e /dev/video0 ]; then
     fi
 else
     echo -e "${WARN} No camera detected"
-    echo "  Camera can be connected later. mjpg-streamer will fail until camera is connected."
+    echo "  Camera can be connected later. ustreamer will fail until camera is connected."
 fi
 
 # Check Python version

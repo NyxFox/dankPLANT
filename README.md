@@ -66,7 +66,7 @@ After deployment, access your system at:
 - **Dashboard**: `http://<your-ip>/`
 - **API Health**: `http://<your-ip>/api/health`
 - **Sensor Data**: `http://<your-ip>/api/sensor`
-- **Video Stream**: `http://<your-ip>/video/stream/?action=stream`
+- **Video Stream**: `http://<your-ip>/video/stream/stream`
 
 ## Manual Installation (Step by Step)
 
@@ -83,6 +83,7 @@ sudo apt-get install -y caddy python3 python3-pip python3-venv v4l-utils ustream
 
 ```bash
 sudo useradd --system --no-create-home --shell /usr/sbin/nologin --comment "Grow Station Service" grow
+sudo usermod -a -G video grow
 ```
 
 ### 3. Create Directories
