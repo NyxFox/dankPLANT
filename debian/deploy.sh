@@ -67,9 +67,8 @@ if [ ! -f "/usr/local/bin/mjpg_streamer" ]; then
 
     # Ensure a clean build and enforce flags across all sub-makes
     make clean || true
-    CFLAGS_OVERRIDES="-O2 -DLINUX -D_GNU_SOURCE -Wall -fPIC -fcommon"
-    log_info "Building mjpg-streamer with CFLAGS: $CFLAGS_OVERRIDES"
-    make CFLAGS="$CFLAGS_OVERRIDES"
+    log_info "Building mjpg-streamer with CFLAGS append: -fcommon (preserve upstream flags)"
+    make CFLAGS+=" -fcommon"
     make install
 
     # Normalize plugin and www install paths for systemd service
