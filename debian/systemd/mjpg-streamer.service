@@ -7,9 +7,9 @@ Wants=network-online.target
 Type=simple
 User=video
 Group=video
-ExecStart=/usr/bin/mjpg_streamer \
-    -i "/usr/lib/x86_64-linux-gnu/mjpg-streamer/input_uvc.so -d /dev/video0 -r 1280x720 -f 15" \
-    -o "/usr/lib/x86_64-linux-gnu/mjpg-streamer/output_http.so -w /usr/share/mjpg-streamer/www -p 8090 -l 127.0.0.1"
+ExecStart=/usr/local/bin/mjpg_streamer \
+    -i "/usr/local/lib/input_uvc.so -d /dev/video0 -r 1280x720 -f 15" \
+    -o "/usr/local/lib/output_http.so -w /usr/local/share/mjpg-streamer/www -p 8090 -l 127.0.0.1"
 Restart=on-failure
 RestartSec=5s
 StandardOutput=append:/var/log/mjpg-streamer/mjpg-streamer.log

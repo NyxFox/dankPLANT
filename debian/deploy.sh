@@ -47,10 +47,30 @@ apt-get install -y \
     python3 \
     python3-pip \
     python3-venv \
-    mjpg-streamer \
     v4l-utils \
     git \
-    curl
+    curl \
+    build-essential \
+    libjpeg-dev \
+    imagemagick \
+    subversion \
+    libv4l-dev \
+    cmake
+
+# Install mjpg-streamer from source (not available in Debian repos)
+log_info "Installing mjpg-streamer from source..."
+MJPG_BUILD_DIR="/tmp/mjpg-streamer-build"
+if [ ! -f "/usr/local/bin/mjpg_streamer" ]; then
+    rm -rf "$MJPG_BUILD_DIR"
+    svn co svn://svn.code.sf.net/p/mjpg-streamer/code/ "$MJPG_BUILD_DIR"
+    cd "$MJPG_BUILD_DIR/mjpg-streamer"
+    make
+    make install
+    log_info "mjpg-streamer installed successfully"
+    cd "$PROJECT_ROOT"
+else
+    log_info "mjpg-streamer already installed"
+fi
 
 # Create grow user if doesn't exist
 log_info "Creating 'grow' user..."
