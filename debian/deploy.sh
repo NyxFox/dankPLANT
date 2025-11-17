@@ -64,6 +64,11 @@ if [ ! -f "/usr/local/bin/mjpg_streamer" ]; then
     rm -rf "$MJPG_BUILD_DIR"
     svn co svn://svn.code.sf.net/p/mjpg-streamer/code/ "$MJPG_BUILD_DIR"
     cd "$MJPG_BUILD_DIR/mjpg-streamer"
+    
+    # Fix compilation issues with modern GCC (multiple definition errors)
+    # Add -fcommon flag to allow multiple definitions (legacy behavior)
+    export CFLAGS="-O2 -DLINUX -D_GNU_SOURCE -Wall -fcommon"
+    
     make
     make install
     log_info "mjpg-streamer installed successfully"
