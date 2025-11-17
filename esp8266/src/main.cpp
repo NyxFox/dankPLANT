@@ -17,11 +17,11 @@
     "rssi": -61
   }
 
-  OLED-Belegungsplan (D1 mini typical):
+  OLED-Pinout (D1 mini typical):
   - SSD1306 I2C
-    SDA -> <GPIO_OLED_SDA> (z. B. D2 / GPIO4)
-    SCL -> <GPIO_OLED_SCL> (z. B. D1 / GPIO5)
-  - DHT11 Data -> <GPIO_DHT> (z. B. D4 / GPIO2)
+    SDA -> <GPIO_OLED_SDA> (e.g. D2 / GPIO4)
+    SCL -> <GPIO_OLED_SCL> (e.g. D1 / GPIO5)
+  - DHT11 Data -> <GPIO_DHT> (e.g. D4 / GPIO2)
 
   Placeholders to keep in code: <GPIO_DHT>, <GPIO_OLED_SDA>, <GPIO_OLED_SCL>, <SERVER_IP>, <SSID>, <WIFI_PASSWORD>
 */
@@ -122,7 +122,7 @@ bool postJSON(float tempC, float humidity, long rssi) {
   http.addHeader("Content-Type", "application/json");
 
   StaticJsonDocument<256> doc;
-  doc["device"] = F("esp8266-grow-controller-01");
+  doc["device"] = DEVICE_ID;
   doc["temp_c"] = tempC;
   doc["humidity"] = (int)round(humidity);
 
@@ -155,11 +155,103 @@ void setup() {
   if (!display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR)) {
     // No display; continue headless
   } else {
+    const char spinner[] = "|/-\\";
+    auto frame = 0u;
+    auto spin = [&](const char *step, const char *detail = "") {
+      display.clearDisplay();
+      display.setTextSize(1);
+      display.setTextColor(SSD1306_WHITE);
+      display.setCursor(0, 0);
+      display.print(F(DEVICE_ID));
+      display.setCursor(0, 12);
+      display.print(step);
+      if (detail && detail[0]) {
+        display.setCursor(0, 24);
+        display.print(detail);
+      }
+      display.setCursor(0, 54);
+      display.print(spinner[frame % (sizeof(spinner) - 1)]);
+      display.display();
+      frame++;
+    };
+
+    // Step 1: DHT init (real readiness = first valid read or max tries)
+    dht.begin();
+    {
+      int attempts = 0;
+      while (attempts < 40) { // ~2s worst case (40 * 50ms)
+        float t = dht.readTemperature();
+        float h = dht.readHumidity();
+        if (!isnan(t) && !isnan(h)) break;
+        spin("DHT init", "waiting sensor");
+        delay(50);
+        attempts++;
+      }
+    }
+    spin("DHT init", "ok");
+    delay(150);
+
+    // Step 2: WiFi connect (live status)
+    {
+      WiFi.mode(WIFI_STA);
+      WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+      unsigned long start = millis();
+      long lastRSSI = 0;
+      while (WiFi.status() != WL_CONNECTED && millis() - start < 15000) {
+        if (WiFi.status() == WL_CONNECTED) break;
+        if (WiFi.status() == WL_CONNECT_FAILED) {
+          spin("WiFi", "failed");
+          break;
+        }
+        if (WiFi.status() == WL_IDLE_STATUS) {
+          spin("WiFi", "idle");
+        } else {
+          if (WiFi.RSSI() != 0) lastRSSI = WiFi.RSSI();
+          char buf[24];
+          if (lastRSSI != 0) {
+            snprintf(buf, sizeof(buf), "RSSI %ld dBm", lastRSSI);
+            spin("WiFi connecting", buf);
+          } else {
+            spin("WiFi connecting");
+          }
+        }
+        delay(200);
+      }
+      if (WiFi.status() == WL_CONNECTED) {
+        spin("WiFi connected", WiFi.SSID().c_str());
+        delay(200);
+      }
+    }
+
+    // Step 3: NTP time sync (real check: epoch > sanity threshold)
+    {
+      configTime(0, 0, "pool.ntp.org", "time.nist.gov");
+      int tries = 0;
+      while (tries < 40) { // up to ~10s (40 * 250ms)
+        time_t now = time(nullptr);
+        if (now > 1600000000) {
+          spin("NTP sync", "time ok");
+          break;
+        }
+        spin("NTP sync", "waiting");
+        delay(250);
+        tries++;
+      }
+    }
+
+    // Final: Ready
     display.clearDisplay();
     display.setTextSize(1);
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(0, 0);
-    display.println(F("Grow Node booting..."));
+    display.print(F(DEVICE_ID));
+    display.setCursor(0, 12);
+    display.print(F("READY"));
+    if (WiFi.status() == WL_CONNECTED) {
+      display.setCursor(0, 24);
+      display.print(F("IP: "));
+      display.print(WiFi.localIP());
+    }
     display.display();
   }
 

@@ -6,7 +6,7 @@
 #define CONFIG_H
 
 // WiFi Configuration
-#define WIFI_SSID "<SSID>"              // Your WiFi network name
+#define WIFI_SSID "<SSID>"               // Your WiFi network name
 #define WIFI_PASSWORD "<WIFI_PASSWORD>"  // Your WiFi password
 
 // Server Configuration
