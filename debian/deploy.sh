@@ -114,12 +114,19 @@ else
     log_warn "User 'grow' already exists"
 fi
 
+# Ensure 'video' group exists and add 'grow' to it for camera access
+if ! getent group video >/dev/null 2>&1; then
+    log_warn "Group 'video' not found; creating system group 'video'..."
+    groupadd --system video
+fi
+usermod -a -G video grow || true
+
 # Create necessary directories
 log_info "Creating directory structure..."
 install -d -m 0755 -o root -g root /var/www/html
 install -d -m 0755 -o grow -g grow /opt/grow/api
 install -d -m 0755 -o grow -g grow /var/log/grow
-install -d -m 0755 -o video -g video /var/log/mjpg-streamer
+install -d -m 0755 -o grow -g grow /var/log/mjpg-streamer
 install -d -m 0755 -o root -g root /var/www/data
 install -d -m 0755 -o root -g root /etc/caddy
 
