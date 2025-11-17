@@ -67,8 +67,14 @@ if [ ! -f "/usr/local/bin/mjpg_streamer" ]; then
 
     # Ensure a clean build and enforce flags across all sub-makes
     make clean || true
-    log_info "Building mjpg-streamer with CFLAGS append: -fcommon (preserve upstream flags)"
-    make CFLAGS+=" -fcommon"
+    # Append -fcommon to CFLAGS in all relevant Makefiles to resolve multiple-definition
+    # without overriding upstream flags like -shared/-fPIC
+    log_info "Patching Makefiles to append -fcommon to CFLAGS..."
+    find "$MJPG_BUILD_DIR/mjpg-streamer" -type f -name Makefile -print \
+        -exec sed -i -E 's/^(CFLAGS[[:space:]]*=[[:space:]]*.*)$/\1 -fcommon/' {} \; \
+        -exec sed -i -E 's/^(CFLAGS[[:space:]]*\+=.*)$/\1 -fcommon/' {} \;
+    log_info "Building mjpg-streamer (preserving upstream flags + -fcommon)"
+    make
     make install
 
     # Normalize plugin and www install paths for systemd service
