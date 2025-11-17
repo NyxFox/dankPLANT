@@ -132,3 +132,24 @@ Or:
 ```bash
 ip addr show
 ```
+
+## Automated install (preseed)
+
+For a fully automated Debian 13 installation that deploys this project, use the preseed file at `debian/preseed.cfg`.
+
+Quick usage:
+
+1. Host `debian/preseed.cfg` via HTTP, or copy it to installer media.
+2. Boot the Debian installer and append a kernel parameter, for example:
+   - `preseed/url=http://<your-server>/preseed.cfg auto=true priority=critical`
+   - or: `preseed/file=/cdrom/preseed.cfg auto=true priority=critical`
+3. The preseed will:
+   - Use DHCP, locale `en_US.UTF-8`, timezone `UTC`
+   - Wipe `/dev/sda` with guided partitioning (atomic)
+   - Create user `growadmin` with password `changeme` (change immediately!)
+   - Install `openssh-server`, `sudo`, `git`, `curl`, `v4l-utils`
+   - Clone this repo to `/opt/grow-station-source` and run `debian/deploy.sh`
+
+Notes:
+- WARNING: This will erase `/dev/sda`. Adjust disk settings in `preseed.cfg` for your environment.
+WARNING: This will erase `/dev/sda`. Adjust disk settings in `preseed.cfg` for your environment.

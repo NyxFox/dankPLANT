@@ -21,22 +21,19 @@
 - **debian/mjpg-streamer.conf** - Camera settings template
 
 ### Documentation
-- **README.md** - Main documentation (Debian-focused)
-- **debian/QUICKSTART.md** - Quick reference guide
-- **debian/MIGRATION.md** - Alpine to Debian migration guide
+**README.md** - Main documentation
+**debian/QUICKSTART.md** - Quick reference guide
 
 ### Other
-- **.gitignore** - Protects sensitive config files
 - **esp8266/include/config.h.example** - ESP8266 configuration template
 
 ## Directory Structure
 
 ```
 dankplant/
-├── README.md (NEW - Debian focused)
-├── .gitignore (NEW)
+├── README.md
 │
-├── debian/ (NEW)
+├── debian/
 │   ├── deploy.sh              # Main deployment script
 │   ├── check.sh               # Pre-installation check
 │   ├── status.sh              # Status checker
@@ -46,36 +43,26 @@ dankplant/
 │   ├── Caddyfile              # Web server config
 │   ├── mjpg-streamer.conf     # Camera config
 │   ├── QUICKSTART.md          # Quick reference
-│   ├── MIGRATION.md           # Migration guide
 │   └── systemd/
 │       ├── flask-api.service
 │       └── mjpg-streamer.service
 │
-├── alpine/ (OLD - kept for reference)
-│   ├── Caddyfile
-│   └── openrc/
-│       ├── caddy
-│       ├── flask-api
-│       ├── mjpg-streamer
-│       └── conf.d/
+
 │
-├── api/ (unchanged)
+├── api/
 │   ├── app.py
-│   └── requirements.txt (updated versions)
+│   └── requirements.txt
 │
-├── dashboard/ (unchanged)
+├── dashboard/
 │   ├── index.html
 │   └── assets/
 │
 ├── esp8266/
 │   ├── platformio.ini
 │   ├── include/
-│   │   └── config.h.example (NEW)
+│   │   └── config.h.example
 │   └── src/
-│       └── main.cpp
-│
-└── docs/
-    └── README.md (updated with deprecation notice)
+        └── main.cpp
 ```
 
 ## Quick Start Commands
@@ -98,25 +85,6 @@ bash debian/status.sh        # Check all services
 bash debian/test.sh          # Run tests
 sudo bash debian/backup.sh   # Backup data
 ```
-
-## Key Improvements Over Alpine Version
-
-1. **Automated Deployment** - Single command installation
-2. **systemd Integration** - Native Debian init system
-3. **Better Logging** - Centralized journald logs
-4. **Security Hardening** - systemd security features
-5. **Comprehensive Testing** - Built-in test suite
-6. **Easy Management** - Helper scripts for common tasks
-7. **Backup/Restore** - Data protection utilities
-8. **Better Documentation** - Extensive guides and references
-
-## What Didn't Change
-
-- Flask API code (`api/app.py`)
-- Dashboard (`dashboard/`)
-- ESP8266 firmware (`esp8266/src/main.cpp`)
-- Caddyfile configuration (same logic)
-- Core functionality and features
 
 ## System Requirements
 

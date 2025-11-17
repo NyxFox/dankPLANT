@@ -1,7 +1,7 @@
 #!/bin/bash
 # One-line installer for Grow Station on Debian 13
-# Usage: curl -sSL https://your-repo/install.sh | sudo bash
-# Or: wget -qO- https://your-repo/install.sh | sudo bash
+# Usage: curl -sSL https://raw.githubusercontent.com/dankplant/dankplant/main/install.sh | sudo bash
+# Or: wget -qO- https://raw.githubusercontent.com/dankplant/dankplant/main/install.sh | sudo bash
 
 set -euo pipefail
 
@@ -40,8 +40,7 @@ if ! command -v git &>/dev/null; then
     apt-get install -y git
 fi
 
-# Clone repository
-REPO_URL="${REPO_URL:-https://github.com/yourusername/dankplant.git}"
+REPO_URL="${REPO_URL:-https://github.com/dankplant/dankplant.git}"
 INSTALL_DIR="${INSTALL_DIR:-/opt/grow-station-source}"
 
 log_info "Cloning repository to $INSTALL_DIR..."

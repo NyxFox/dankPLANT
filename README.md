@@ -39,7 +39,6 @@ graph LR
 /api/            # Flask API (GET/POST /api/sensor)
 /dashboard/      # Static dashboard (HTML/CSS/JS)
 /esp8266/        # PlatformIO project for D1 mini
-/docs/           # Additional documentation
 ```
 
 ## Quick Start - Automated Installation
@@ -48,7 +47,7 @@ The easiest way to deploy on a fresh Debian 13 system:
 
 ```bash
 # 1. Clone this repository
-git clone <repository-url> /opt/grow-station
+git clone https://github.com/NyxFox/dankplant.git /opt/grow-station
 cd /opt/grow-station
 
 # 2. Run the automated deployment script as root
