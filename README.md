@@ -469,5 +469,14 @@ Feel free to submit issues and pull requests for improvements!
 
 ## License
 
-This project is provided as-is for educational and personal use.
-# dankplant
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+The project uses various third-party libraries and software components, each with their own licenses (MIT, BSD, Apache-2.0, GPL-3.0). All attributions and license information are documented in the LICENSE file.
+
+## Acknowledgments
+
+- [Adafruit Industries](https://www.adafruit.com/) for the excellent sensor libraries
+- [ArduinoJson](https://arduinojson.org/) by Benoit Blanchon
+- [Flask](https://flask.palletsprojects.com/) and the Pallets team
+- [Caddy](https://caddyserver.com/) for the modern web server
+- [uStreamer](https://github.com/pikvm/ustreamer) by Maxim Devaev for efficient video streaming

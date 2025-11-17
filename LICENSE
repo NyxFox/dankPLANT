@@ -1,0 +1,72 @@
+MIT License
+
+Copyright (c) 2025 NyxFox
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+--------------------------------------------------------------------------------
+
+THIRD-PARTY SOFTWARE NOTICES AND INFORMATION
+
+This project uses the following third-party software components:
+
+Python Dependencies:
+- Flask (BSD-3-Clause License)
+  Copyright © 2010 by the Pallets team
+  https://github.com/pallets/flask
+
+- Gunicorn (MIT License)
+  Copyright © 2009-2018 Benoît Chesneau
+  https://github.com/benoitc/gunicorn
+
+- Werkzeug (BSD-3-Clause License)
+  Copyright © 2007 by the Pallets team
+  https://github.com/pallets/werkzeug
+
+ESP8266 Arduino Libraries:
+- Adafruit SSD1306 (BSD License)
+  Copyright © 2012 Adafruit Industries
+  https://github.com/adafruit/Adafruit_SSD1306
+
+- Adafruit GFX Library (BSD License)
+  Copyright © 2012 Adafruit Industries
+  https://github.com/adafruit/Adafruit-GFX-Library
+
+- DHT sensor library (MIT License)
+  Copyright © 2020 Adafruit Industries
+  https://github.com/adafruit/DHT-sensor-library
+
+- ArduinoJson (MIT License)
+  Copyright © 2014-2023 Benoit Blanchon
+  https://github.com/bblanchon/ArduinoJson
+
+System Software (not included, referenced for deployment):
+- Caddy Web Server (Apache-2.0 License)
+  Copyright © 2015 Matthew Holt and The Caddy Authors
+  https://github.com/caddyserver/caddy
+
+- uStreamer (GPL-3.0 License)
+  Copyright © 2018-2023 Maxim Devaev
+  https://github.com/pikvm/ustreamer
+  Note: This software is used as an external service and is not included in
+  this repository. Users must comply with GPL-3.0 when using uStreamer.
+
+All third-party software components are used in accordance with their
+respective licenses. Please refer to each project's repository for full
+license texts and terms.
