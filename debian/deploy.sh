@@ -57,20 +57,43 @@ apt-get install -y \
     libv4l-dev \
     cmake
 
-# Install mjpg-streamer from source (not available in Debian repos)
+# Install mjpg-streamer from source (official SourceForge SVN)
 log_info "Installing mjpg-streamer from source..."
 MJPG_BUILD_DIR="/tmp/mjpg-streamer-build"
 if [ ! -f "/usr/local/bin/mjpg_streamer" ]; then
     rm -rf "$MJPG_BUILD_DIR"
     svn co svn://svn.code.sf.net/p/mjpg-streamer/code/ "$MJPG_BUILD_DIR"
     cd "$MJPG_BUILD_DIR/mjpg-streamer"
-    
-    # Fix compilation issues with modern GCC (multiple definition errors)
-    # Add -fcommon flag to allow multiple definitions (legacy behavior)
-    export CFLAGS="-O2 -DLINUX -D_GNU_SOURCE -Wall -fcommon"
-    
-    make
+
+    # Ensure a clean build and enforce flags across all sub-makes
+    make clean || true
+    CFLAGS_OVERRIDES="-O2 -DLINUX -D_GNU_SOURCE -Wall -fPIC -fcommon"
+    log_info "Building mjpg-streamer with CFLAGS: $CFLAGS_OVERRIDES"
+    make CFLAGS="$CFLAGS_OVERRIDES"
     make install
+
+    # Normalize plugin and www install paths for systemd service
+    if [ -f "/usr/local/lib/mjpg-streamer/input_uvc.so" ] && [ ! -f "/usr/local/lib/input_uvc.so" ]; then
+        ln -sf "/usr/local/lib/mjpg-streamer/input_uvc.so" "/usr/local/lib/input_uvc.so"
+    fi
+    if [ -f "/usr/local/lib/mjpg-streamer/output_http.so" ] && [ ! -f "/usr/local/lib/output_http.so" ]; then
+        ln -sf "/usr/local/lib/mjpg-streamer/output_http.so" "/usr/local/lib/output_http.so"
+    fi
+
+    # Ensure www assets available where service expects them
+    if [ ! -d "/usr/local/share/mjpg-streamer/www" ]; then
+        if [ -d "/usr/local/www" ]; then
+            install -d -m 0755 "/usr/local/share/mjpg-streamer"
+            ln -s "/usr/local/www" "/usr/local/share/mjpg-streamer/www"
+        elif [ -d "$MJPG_BUILD_DIR/mjpg-streamer/www" ]; then
+            install -d -m 0755 "/usr/local/share/mjpg-streamer"
+            cp -r "$MJPG_BUILD_DIR/mjpg-streamer/www" "/usr/local/share/mjpg-streamer/"
+        elif [ -d "$MJPG_BUILD_DIR/mjpg-streamer-experimental/www" ]; then
+            install -d -m 0755 "/usr/local/share/mjpg-streamer"
+            cp -r "$MJPG_BUILD_DIR/mjpg-streamer-experimental/www" "/usr/local/share/mjpg-streamer/"
+        fi
+    fi
+
     log_info "mjpg-streamer installed successfully"
     cd "$PROJECT_ROOT"
 else
