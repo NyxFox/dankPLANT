@@ -331,57 +331,7 @@ sudo systemctl disable apache2
 4. Check server IP is correct
 5. Monitor serial output: `pio device monitor`
 
-## Security Considerations
-
-### Current Setup (Development/LAN Only)
-
-- Caddy listens on port 80 (HTTP only, no TLS)
-- API has no authentication
-- CORS allows all origins (`*`)
-- Suitable for trusted LAN environments only
-
-### Production Hardening
-
-For internet-exposed deployments:
-
-1. **Enable HTTPS in Caddy**:
-   ```caddy
-   yourdomain.com {
-       # Caddy will automatically get Let's Encrypt certificate
-       # ... rest of config
-   }
-   ```
-
-2. **Add API Authentication**:
-   - Implement API key authentication
-   - Use Flask-HTTPAuth or similar
-   - Restrict CORS origins
-
-3. **Firewall Configuration**:
-   ```bash
-   sudo apt-get install ufw
-   sudo ufw allow 22/tcp    # SSH
-   sudo ufw allow 80/tcp    # HTTP
-   sudo ufw allow 443/tcp   # HTTPS
-   sudo ufw enable
-   ```
-
-4. **Restrict CORS** in `api/app.py`:
-   ```python
-   resp.headers["Access-Control-Allow-Origin"] = "https://yourdomain.com"
-   ```
-
 ## Performance Tuning
-
-### Gunicorn Workers
-
-Adjust workers in `/etc/systemd/system/flask-api.service`:
-```ini
-ExecStart=/opt/grow/api/.venv/bin/gunicorn \
-    --workers 4 \  # Increase for more concurrent requests
-    --bind 127.0.0.1:5000 \
-    app:app
-```
 
 ### Camera Performance
 
